@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090b10">
+<title>NEXO</title>
+<style>
+:root{
+ --bg:#080a0e;--panel:#0f1218;--panel2:#151a22;--panel3:#1c222c;
+ --line:#29303b;--text:#f5f7fb;--muted:#8d96a7;--accent:#7657ff;
+ --good:#35d58a;--danger:#f15b70;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,textarea{font:inherit}
+button{cursor:pointer;color:inherit}
+.app{height:100dvh;display:grid;grid-template-columns:66px 270px minmax(0,1fr) 235px;overflow:hidden}
+.rail{background:#090b0f;border-right:1px solid var(--line);padding:9px 8px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.rail button{width:48px;height:48px;border:0;border-radius:15px;background:var(--panel2);font-weight:900}
+.rail button.active,.rail button:hover{background:var(--accent);border-radius:13px}
+.rail .add{color:var(--good);font-size:23px}
+.side{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
+.sideTop{height:57px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 13px}
+.brand{font-size:18px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sideBody{padding:10px;overflow:auto;flex:1}
+.group{margin-bottom:16px}
+.groupHead{font-size:10px;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.08em;padding:6px}
+.nav{width:100%;border:0;background:transparent;color:var(--muted);padding:9px;border-radius:8px;text-align:left;display:flex;gap:9px;align-items:center}
+.nav:hover,.nav.active{background:var(--panel3);color:var(--text)}
+.channelRow{display:flex;align-items:center;gap:2px}
+.channelRow .nav{flex:1}
+.channelAdd{width:34px;height:34px;border:0;background:transparent;color:var(--muted);border-radius:8px;font-size:20px}
+.channelAdd:hover{background:var(--panel3);color:var(--text)}
+.profile{border-top:1px solid var(--line);padding:9px;display:flex;align-items:center;gap:8px}
+.avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#7657ff,#a18cff);display:grid;place-items:center;font-weight:900;flex:0 0 38px}
+.profile b{font-size:12px}.profile small{display:block;color:var(--muted)}
+.main{min-width:0;display:flex;flex-direction:column}
+.head{height:57px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 14px;gap:10px}
+.headTitle{font-weight:850}.headSub{font-size:11px;color:var(--muted)}
+.headActions{margin-left:auto;display:flex;gap:2px}
+.icon{width:34px;height:34px;border:0;background:transparent;color:var(--muted);border-radius:8px}
+.icon:hover{background:var(--panel3);color:var(--text)}
+.mobileMenu{display:none}
+.scroll{flex:1;overflow:auto}
+.welcome{max-width:780px;margin:auto;padding:42px 22px}
+.welcomeIcon{width:62px;height:62px;border-radius:18px;background:var(--panel3);display:grid;place-items:center;font-size:28px;font-weight:900}
+.welcome h1{font-size:28px;margin:14px 0 7px}.welcome p{color:var(--muted);line-height:1.55}
+.messages{max-width:1000px;margin:auto;padding:16px;width:100%}
+.message{display:flex;gap:11px;padding:8px;border-radius:9px}
+.message:hover{background:#ffffff08}
+.message .avatar{width:40px;height:40px;flex-basis:40px}
+.meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.author{font-weight:850}.time{font-size:10px;color:var(--muted)}
+.text{margin-top:3px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.badges{display:flex;gap:4px;flex-wrap:wrap}
+.badge{font-size:9px;padding:2px 6px;border-radius:6px;background:#302660;color:#c9c0ff;font-weight:900;border:1px solid #4a3b91}
+.badge.friend{background:#173427;color:#7af0b2;border-color:#285b43}
+.attach{max-width:min(360px,80vw);max-height:260px;border-radius:10px;margin-top:7px;display:block}
+.composerArea{padding:8px 14px 13px}
+.composer{max-width:1000px;margin:auto;display:flex;gap:5px;align-items:flex-end;background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:6px}
+.composer textarea{flex:1;background:transparent;border:0;outline:0;color:var(--text);resize:none;min-height:40px;max-height:130px;padding:9px}
+.send{width:40px;height:40px;border:0;border-radius:10px;background:var(--accent);font-weight:900}.send:disabled{opacity:.4}
+.emoji{border:0;background:transparent;font-size:20px}
+.right{background:var(--panel);border-left:1px solid var(--line);padding:13px;overflow:auto}
+.right h4{font-size:10px;color:var(--muted);text-transform:uppercase;margin:8px}
+.profileCard{padding:12px;background:var(--panel2);border:1px solid var(--line);border-radius:12px}
+.profileLine{display:flex;gap:10px;align-items:center}
+.profileCard .avatar{width:48px;height:48px;flex-basis:48px}
+.handle{color:var(--muted);font-size:11px}
+.about{font-size:12px;color:var(--muted);line-height:1.45;margin-top:10px}
+.empty{padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--muted);font-size:12px;line-height:1.45}
+.friend{display:flex;gap:8px;align-items:center;padding:9px;background:var(--panel2);border-radius:9px;margin-bottom:7px}
+.friend b{flex:1;font-size:12px}.pill{font-size:9px;color:var(--good);font-weight:900}
+.primary,.secondary,.danger{border:0;border-radius:9px;padding:9px 12px;font-weight:800}
+.primary{background:var(--accent)}.secondary{background:var(--panel3)}.danger{background:#3b1820;color:#ff9aaa}
+.verify{padding:12px;border:1px solid #40377a;background:#17132c;border-radius:10px;color:#c5baff;font-size:12px;line-height:1.5}
+.mobile{display:none}
+.shade{position:fixed;inset:0;background:#0009;z-index:20;display:none}.shade.open{display:block}
+.modal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,94vw);max-height:90dvh;overflow:auto;background:var(--panel2);border:1px solid var(--line);border-radius:16px}
+.mh{padding:17px;border-bottom:1px solid var(--line);display:flex}.mh b{flex:1}.mb{padding:17px}.mf{padding:12px 17px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+.field{margin-bottom:14px}.field label{display:block;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;margin-bottom:6px}
+.field input,.field textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:9px;color:var(--text);padding:10px;outline:0}
+.drawer{position:fixed;inset:0;z-index:30;display:none;background:#0009}
+.drawer.open{display:block}
+.drawerPanel{width:min(92vw,360px);height:100%;background:var(--panel);border-right:1px solid var(--line);padding:12px;overflow:auto}
+.drawerHead{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.drawerHead b{flex:1}
+.drawerSection{margin:15px 0 7px;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase}
+.drawerPlace{display:flex;align-items:center;gap:6px}
+.drawerPlace .nav{flex:1}
+.toast{position:fixed;z-index:100;bottom:24px;left:50%;transform:translate(-50%,15px);opacity:0;background:#f5f7fb;color:#111;padding:10px 14px;border-radius:10px;font-weight:800;font-size:12px;transition:.2s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:1050px){
+ .app{grid-template-columns:66px 245px minmax(0,1fr)}
+ .right{display:none}
+}
+@media(max-width:700px){
+ html,body{overflow:hidden}
+ .app{display:block}
+ .rail,.side,.right{display:none}
+ .main{height:100dvh;width:100vw}
+ .head{height:56px;padding:0 10px}
+ .mobileMenu{display:block}
+ .headTitle{font-size:16px}
+ .scroll{padding-bottom:0}
+ .messages{padding:9px 4px}
+ .welcome{padding:30px 18px}
+ .composerArea{padding:7px 7px 6px}
+ .composer{border-radius:14px}
+ .attach{max-width:calc(100vw - 90px)}
+ .mobile{display:flex;height:61px;background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+ .mobile button{flex:1;border:0;background:transparent;color:var(--muted);font-size:10px}
+ .mobile b{display:block;font-size:18px}
+ .mobile .active{color:var(--text)}
+}
+</style>
+</head>
+<body>
+<div class="app">
+ <aside class="rail" id="rail"></aside>
+ <aside class="side">
+  <div class="sideTop"><div class="brand" id="brand">NEXO</div></div>
+  <div class="sideBody" id="sideBody"></div>
+  <div class="profile">
+   <div class="avatar" id="mini">YO</div>
+   <div style="flex:1;min-width:0"><b id="miniName">You</b><small>Account</small></div>
+   <button class="icon" onclick="settings()">⚙</button>
+  </div>
+ </aside>
+ <main class="main">
+  <header class="head">
+   <button class="icon mobileMenu" onclick="openDrawer()">☰</button>
+   <span id="headIcon">⌂</span>
+   <div><div class="headTitle" id="headTitle">Home</div><div class="headSub" id="headSub">Your NEXO home</div></div>
+   <div class="headActions">
+    <button class="icon" onclick="search()">⌕</button>
+    <button class="icon" onclick="showMyProfile()">●</button>
+   </div>
+  </header>
+  <section class="scroll" id="scroll"></section>
+  <div class="composerArea" id="composerArea" style="display:none">
+   <div class="composer">
+    <button class="emoji" onclick="insertEmoji()">😀</button>
+    <button class="icon" onclick="pickFile()">＋</button>
+    <input id="file" type="file" accept="image/*,video/*" hidden onchange="attachFile(event)">
+    <textarea id="composer" placeholder="Write a message..." rows="1"></textarea>
+    <button class="send" id="send" onclick="send()">➤</button>
+   </div>
+  </div>
+  <nav class="mobile">
+   <button class="active" onclick="mobile(this,'home')"><b>⌂</b>Home</button>
+   <button onclick="mobile(this,'places')"><b>◈</b>Places</button>
+   <button onclick="mobile(this,'friends')"><b>♙</b>Friends</button>
+   <button onclick="mobile(this,'profile')"><b>●</b>Profile</button>
+  </nav>
+ </main>
+ <aside class="right" id="right"></aside>
+</div>
+
+<div class="drawer" id="drawer" onclick="if(event.target===this)closeDrawer()">
+ <div class="drawerPanel" id="drawerPanel"></div>
+</div>
+<div class="shade" id="shade" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='nexo_real_v2';
+const fresh=()=>({
+ profile:{name:'You',handle:'@you',about:'',badges:['OWNER']},
+ places:[],friends:[],dms:[],
+ currentPlace:null,currentChannel:null,currentDM:null,view:'home'
+});
+let state=load(),pendingFile=null;
+
+function load(){
+ try{
+  const x=JSON.parse(localStorage.getItem(KEY));
+  if(x&&x.profile&&Array.isArray(x.places)){
+   x.profile.badges=Array.isArray(x.profile.badges)?x.profile.badges:['OWNER'];
+   return x;
+  }
+ }catch(e){}
+ return fresh();
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function uid(){return crypto?.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function initials(n){return (n||'You').split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase()}
+function place(){return state.places.find(p=>p.id===state.currentPlace)}
+function channel(){return place()?.channels.find(c=>c.id===state.currentChannel)}
+function now(){return new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}
+function toast(s){const t=document.getElementById('toast');t.textContent=s;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1800)}
+
+function render(){
+ document.getElementById('mini').textContent=initials(state.profile.name);
+ document.getElementById('miniName').textContent=state.profile.name;
+ document.getElementById('brand').textContent=place()?.name||'NEXO';
+ rail();side();right();main();
+}
+function rail(){
+ let r=document.getElementById('rail');
+ r.innerHTML=`<button class="${state.view==='home'?'active':''}" onclick="home()">N</button>`;
+ state.places.forEach(p=>{
+  r.innerHTML+=`<button class="${p.id===state.currentPlace?'active':''}" title="${esc(p.name)}" onclick="openPlace('${p.id}')">${esc(initials(p.name).slice(0,2))}</button>`;
+ });
+ r.innerHTML+=`<div style="height:1px;background:var(--line);width:38px;margin:2px 0"></div>
+ <button class="add" title="Create a Place" onclick="createPlace()">＋</button>`;
+}
+function side(){
+ const s=document.getElementById('sideBody');
+ let html=`<div class="group">
+  <div class="groupHead">Social</div>
+  <button class="nav ${state.view==='friends'?'active':''}" onclick="friends()">♙ Friends</button>
+  <button class="nav ${state.view==='dms'?'active':''}" onclick="dms()">✉ Direct messages</button>
+ </div>`;
+ if(place()){
+  html+=`<div class="group">
+   <div class="groupHead">Text Areas <button class="channelAdd" onclick="createChannel()">＋</button></div>`;
+  if(place().channels.length){
+   place().channels.forEach(c=>{
+    html+=`<div class="channelRow">
+     <button class="nav ${c.id===state.currentChannel?'active':''}" onclick="openChannel('${c.id}')"># ${esc(c.name)}</button>
+     <button class="channelAdd" title="Channel options" onclick="channelSettings('${c.id}')">⋯</button>
+    </div>`;
+   });
+  }else{
+   html+=`<div class="empty">No text areas yet.<br>Use the ＋ beside Text Areas to create one.</div>`;
+  }
+  html+=`</div><button class="nav" onclick="placeSettings()">⚙ Place settings</button>`;
+ }else{
+  html+=`<div class="empty">Create a Place to get your own channel list here. On a phone, tap ☰ to open this same sidebar.</div>`;
+ }
+ s.innerHTML=html;
+}
+function right(){
+ const r=document.getElementById('right');
+ const p=state.profile;
+ r.innerHTML=`<h4>Your profile</h4><div class="profileCard">
+  <div class="profileLine"><div class="avatar">${esc(initials(p.name))}</div><div><b>${esc(p.name)}</b><div class="handle">${esc(p.handle)}</div></div></div>
+  ${p.about?`<div class="about">${esc(p.about)}</div>`:''}
+  <div class="badges" style="margin-top:10px">${badgeHtml(p.badges)}</div>
+ </div>
+ <h4 style="margin-top:18px">Visible badges</h4>
+ <div class="empty">Your badges appear beside your name on messages and on your profile so other users can see them.</div>`;
+}
+function badgeHtml(badges){
+ return (badges||[]).map(b=>`<span class="badge">${esc(b)}</span>`).join('');
+}
+function main(){
+ const comp=document.getElementById('composerArea');
+ if(state.view==='chat'){renderChat();return}
+ if(state.view==='dm'){renderDM();return}
+ comp.style.display='none';
+ const sc=document.getElementById('scroll');
+ if(state.view==='home'){
+  setHead('⌂','Home','Your NEXO home');
+  sc.innerHTML=`<div class="welcome"><div class="welcomeIcon">N</div><h1>Welcome to NEXO</h1>
+  <p>Your Places and conversations live here. Nothing is pre-filled with fake users or fake messages.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px">
+   <button class="primary" onclick="createPlace()">＋ Create a Place</button>
+   <button class="secondary" onclick="friends()">♙ Friends</button>
+  </div></div>`;
+ }else if(state.view==='friends') sc.innerHTML=friendsView();
+ else if(state.view==='dms') sc.innerHTML=dmsView();
+ else if(state.view==='profile') sc.innerHTML=profileView();
+}
+function setHead(icon,title,sub){document.getElementById('headIcon').textContent=icon;document.getElementById('headTitle').textContent=title;document.getElementById('headSub').textContent=sub}
+function renderChat(){
+ const p=place(),c=channel(),sc=document.getElementById('scroll'),comp=document.getElementById('composerArea');
+ if(!p){home();return}
+ if(!c){
+  setHead('◈',p.name,'Choose a text area from the sidebar');
+  comp.style.display='none';
+  sc.innerHTML=`<div class="welcome"><div class="welcomeIcon">◈</div><h1>${esc(p.name)}</h1><p>No text area is selected. On desktop use the + beside Text Areas. On a phone tap ☰ and create/select one from the sidebar.</p><button class="primary" onclick="createChannel()">＋ Create a Text Area</button></div>`;
+  return;
+ }
+ setHead('#',c.name,p.name);
+ comp.style.display='block';
+ sc.innerHTML=`<div class="messages">${c.messages.length?c.messages.map(messageHtml).join(''):`<div class="welcome" style="padding-top:25px"><div class="welcomeIcon">#</div><h1>${esc(c.name)}</h1><p>This is the beginning. There are no fake messages.</p></div>`}</div>`;
+ sc.scrollTop=sc.scrollHeight;
+}
+function messageHtml(m){
+ return `<article class="message"><div class="avatar">${esc(m.avatar)}</div><div style="min-width:0">
+  <div class="meta"><span class="author">${esc(m.author)}</span>${badgeHtml(m.badges||[])}<span class="time">${esc(m.time)}</span></div>
+  ${m.text?`<div class="text">${esc(m.text)}</div>`:''}${m.file?fileHtml(m.file):''}
+ </div></article>`;
+}
+function fileHtml(f){
+ if(f.type.startsWith('image/'))return `<img class="attach" src="${f.data}" alt="Attached image">`;
+ if(f.type.startsWith('video/'))return `<video class="attach" controls src="${f.data}"></video>`;
+ return '';
+}
+function home(){state.view='home';state.currentPlace=null;state.currentChannel=null;save();render()}
+function openPlace(pid){
+ state.currentPlace=pid;
+ state.currentChannel=state.places.find(p=>p.id===pid)?.channels[0]?.id||null;
+ state.currentDM=null;state.view='chat';save();render();closeDrawer();
+}
+function openChannel(cid){state.currentChannel=cid;state.view='chat';state.currentDM=null;save();render();closeDrawer()}
+function createPlace(){
+ form('Create a Place','Place name','Create',n=>{
+  const p={id:uid(),name:n,channels:[]};
+  state.places.push(p);state.currentPlace=p.id;state.currentChannel=null;state.view='chat';
+  save();render();closeDrawer();
+ });
+}
+function createChannel(){
+ if(!place()){toast('Create a Place first');return}
+ form('Create a Text Area','Channel name','Create',n=>{
+  const c={id:uid(),name:n,messages:[]};place().channels.push(c);
+  state.currentChannel=c.id;state.view='chat';save();render();closeDrawer();
+ });
+}
+function form(title,label,action,done){
+ openModal(`<div class="mh"><b>${esc(title)}</b><button class="icon" onclick="closeModal()">×</button></div>
+ <div class="mb"><div class="field"><label>${esc(label)}</label><input id="form" maxlength="60"></div></div>
+ <div class="mf"><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="finishForm()">${esc(action)}</button></div>`);
+ window.__formDone=done;setTimeout(()=>document.getElementById('form')?.focus(),30);
+}
+function finishForm(){
+ const v=document.getElementById('form').value.trim();
+ if(v){const done=window.__formDone;closeModal();done(v)}
+}
+function channelSettings(cid){
+ const c=place()?.channels.find(x=>x.id===cid);if(!c)return;
+ openModal(`<div class="mh"><b>Text Area settings</b><button class="icon" onclick="closeModal()">×</button></div>
+ <div class="mb"><div class="field"><label>Name</label><input id="cn" value="${esc(c.name)}" maxlength="60"></div></div>
+ <div class="mf"><button class="danger" onclick="deleteChannel('${cid}')">Delete</button><button class="primary" onclick="saveChannel('${cid}')">Save</button></div>`);
+}
+function saveChannel(cid){
+ const c=place()?.channels.find(x=>x.id===cid),v=document.getElementById('cn')?.value.trim();
+ if(c&&v){c.name=v;save();closeModal();render()}
+}
+function deleteChannel(cid){
+ if(!confirm('Delete this text area and its saved messages?'))return;
+ const p=place();if(!p)return;
+ p.channels=p.channels.filter(c=>c.id!==cid);
+ state.currentChannel=p.channels[0]?.id||null;save();closeModal();render();
+}
+function send(){
+ const box=document.getElementById('composer'),text=box.value.trim();
+ if(!text&&!pendingFile)return;
+ if(containsBlocked(text)){toast('Message blocked by NEXO safety filter');return}
+ const msg={id:uid(),author:state.profile.name||'You',avatar:initials(state.profile.name),badges:[...(state.profile.badges||['OWNER'])],text,time:now(),owner:true,file:pendingFile};
+ if(state.view==='dm'){
+  const d=state.dms.find(x=>x.friendId===state.currentDM);
+  if(!d){toast('Start a DM from Friends first');return}
+  d.messages.push(msg);
+ }else{
+  const c=channel();if(!c){toast('Create/select a text area first');return}
+  c.messages.push(msg);
+ }
+ pendingFile=null;document.getElementById('file').value='';box.value='';box.style.height='auto';save();render();
+}
+function containsBlocked(text){
+ const q=text.toLowerCase();
+ return /porn|pornography|sexual\s+image|explicit\s+image|nude\s+image/.test(q);
+}
+function insertEmoji(){
+ const box=document.getElementById('composer');box.value+=(box.value?' ':'')+'😀';box.focus();
+}
+function pickFile(){document.getElementById('file').click()}
+function attachFile(e){
+ const f=e.target.files[0];if(!f)return;
+ if(f.size>8*1024*1024){toast('Files must be under 8 MB in this build');e.target.value='';return}
+ if(!/^image\/|^video\//.test(f.type)){toast('Only images and videos are supported');e.target.value='';return}
+ const rd=new FileReader();
+ rd.onload=()=>{pendingFile={name:f.name,type:f.type,data:rd.result};toast('Attachment ready — send to post it')};
+ rd.readAsDataURL(f);
+}
+document.getElementById('composer').addEventListener('keydown',e=>{
+ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}
+});
+document.getElementById('composer').addEventListener('input',e=>{
+ e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,130)+'px';
+});
+
+function friends(){state.view='friends';state.currentDM=null;save();render()}
+function friendsView(){
+ return `<div class="welcome"><div class="welcomeIcon">♙</div><h1>Friends</h1>
+ <p>Add people you actually know. This single-file build stores the list on this device; it does not invent accounts.</p>
+ <button class="primary" onclick="addFriend()">＋ Add friend</button>
+ ${state.friends.length?'<div style="margin-top:20px">'+state.friends.map(f=>`<div class="friend"><div class="avatar" style="width:34px;height:34px;flex-basis:34px">${esc(initials(f.name))}</div><b>${esc(f.name)}</b><div class="badges">${badgeHtml(f.badges||['FRIEND'])}</div><button class="secondary" onclick="startDM('${f.id}')">Message</button></div>`).join('')+'</div>':''}</div>`;
+}
+function addFriend(){
+ form('Add a friend','Friend name','Add',n=>{
+  state.friends.push({id:uid(),name:n,badges:['FRIEND']});save();render();toast('Friend saved on this device');
+ });
+}
+function dms(){state.view='dms';state.currentDM=null;save();render()}
+function startDM(fid){
+ if(!state.dms.find(d=>d.friendId===fid))state.dms.push({id:uid(),friendId:fid,messages:[]});
+ state.currentDM=fid;state.view='dm';save();renderDM();
+}
+function dmsView(){
+ return `<div class="welcome"><div class="welcomeIcon">✉</div><h1>Direct messages</h1>
+ <p>Private conversations saved on this device.</p>
+ ${state.dms.length?state.dms.map(d=>{const f=state.friends.find(x=>x.id===d.friendId);return f?`<div class="friend" onclick="openDM('${f.id}')"><div class="avatar" style="width:34px;height:34px;flex-basis:34px">${esc(initials(f.name))}</div><b>${esc(f.name)}</b><div class="badges">${badgeHtml(f.badges||['FRIEND'])}</div><span>›</span></div>`:''}).join(''):'<div class="empty">No conversations yet.</div>'}</div>`;
+}
+function openDM(fid){state.currentDM=fid;state.view='dm';save();renderDM()}
+function renderDM(){
+ const f=state.friends.find(x=>x.id===state.currentDM),d=state.dms.find(x=>x.friendId===state.currentDM);
+ if(!f||!d){dms();return}
+ setHead('✉',f.name,'Direct message');
+ document.getElementById('composerArea').style.display='block';
+ document.getElementById('scroll').innerHTML=`<div class="messages">${d.messages.length?d.messages.map(messageHtml).join(''):`<div class="welcome" style="padding-top:25px"><h1>Start a conversation</h1><p>No messages yet.</p></div>`}</div>`;
+ const sc=document.getElementById('scroll');sc.scrollTop=sc.scrollHeight;
+}
+function profileView(){
+ const p=state.profile;
+ return `<div class="welcome"><div class="welcomeIcon">●</div><h1>${esc(p.name)}</h1>
+ <p>${esc(p.handle)}</p>
+ ${p.about?`<p>${esc(p.about)}</p>`:''}
+ <div class="profileCard" style="max-width:520px"><div class="profileLine"><div class="avatar">${esc(initials(p.name))}</div><div><b>${esc(p.name)}</b><div class="handle">${esc(p.handle)}</div></div></div>
+ <div class="badges" style="margin-top:12px">${badgeHtml(p.badges)}</div></div>
+ <div style="margin-top:18px"><button class="primary" onclick="settings()">⚙ Account settings</button></div></div>`;
+}
+function settings(){
+ const p=state.profile;
+ openModal(`<div class="mh"><b>Account settings</b><button class="icon" onclick="closeModal()">×</button></div>
+ <div class="mb">
+  <div class="field"><label>Display name</label><input id="sn" value="${esc(p.name)}"></div>
+  <div class="field"><label>Handle</label><input id="sh" value="${esc(p.handle)}"></div>
+  <div class="field"><label>About</label><textarea id="sa" rows="4">${esc(p.about)}</textarea></div>
+  <h3>Badges</h3>
+  <div class="verify">◆ <b>OWNER</b><br>This badge is attached to the owner account in this build and is shown publicly beside your messages and profile.</div>
+  <br><div class="verify">✦ <b>CREATOR</b><br>Reserved for a future creator/progression system.</div>
+ </div>
+ <div class="mf"><button class="primary" onclick="saveSettings()">Save changes</button></div>`);
+}
+function saveSettings(){
+ state.profile.name=document.getElementById('sn').value.trim()||'You';
+ state.profile.handle=document.getElementById('sh').value.trim()||'@you';
+ state.profile.about=document.getElementById('sa').value.trim();
+ state.profile.badges=['OWNER'];
+ save();closeModal();render();toast('Account settings saved');
+}
+function showMyProfile(){openModal(`<div class="mh"><b>Public profile</b><button class="icon" onclick="closeModal()">×</button></div><div class="mb">${profileView().replace('<div class="welcome">','<div>').replace('</div></div>','</div>')}</div>`)}
+function placeSettings(){
+ const p=place();if(!p)return;
+ openModal(`<div class="mh"><b>Place settings</b><button class="icon" onclick="closeModal()">×</button></div>
+ <div class="mb"><div class="field"><label>Place name</label><input id="pn" value="${esc(p.name)}"></div>
+ <p style="color:var(--muted);font-size:12px">This local build saves Places on this device. A production version needs a real backend for shared membership and permissions.</p></div>
+ <div class="mf"><button class="danger" onclick="deletePlace()">Delete</button><button class="primary" onclick="savePlace()">Save</button></div>`);
+}
+function savePlace(){
+ const p=place(),v=document.getElementById('pn')?.value.trim();
+ if(p&&v){p.name=v;save();closeModal();render()}
+}
+function deletePlace(){
+ if(!confirm('Delete this Place?'))return;
+ state.places=state.places.filter(p=>p.id!==state.currentPlace);
+ state.currentPlace=null;state.currentChannel=null;state.view='home';save();closeModal();render();
+}
+function search(){
+ openModal(`<div class="mh"><b>Search</b><button class="icon" onclick="closeModal()">×</button></div>
+ <div class="mb"><div class="field"><input id="sq" placeholder="Search your saved messages..." oninput="doSearch()"></div><div id="sr"></div></div>`);
+}
+function doSearch(){
+ const q=document.getElementById('sq').value.toLowerCase(),out=document.getElementById('sr'),hits=[];
+ for(const p of state.places)for(const c of p.channels)for(const m of c.messages)if((m.text||'').toLowerCase().includes(q))hits.push(`<div class="friend"><b>${esc(m.author)}</b><div class="badges">${badgeHtml(m.badges||[])}</div><span>${esc(m.text)}</span></div>`);
+ out.innerHTML=q?(hits.join('')||'<div class="empty">No matches.</div>'):'';
+}
+function openDrawer(){
+ const d=document.getElementById('drawer'),p=place();
+ document.getElementById('drawerPanel').innerHTML=`<div class="drawerHead"><b>${esc(p?.name||'NEXO')}</b><button class="icon" onclick="closeDrawer()">×</button></div>
+ <button class="nav" onclick="closeDrawer();home()">⌂ Home</button>
+ <button class="nav" onclick="closeDrawer();friends()">♙ Friends</button>
+ <button class="nav" onclick="closeDrawer();dms()">✉ Direct messages</button>
+ <div class="drawerSection">Places</div>
+ ${state.places.map(x=>`<div class="drawerPlace"><button class="nav ${x.id===state.currentPlace?'active':''}" onclick="openPlace('${x.id}')">◈ ${esc(x.name)}</button></div>`).join('')}
+ <button class="nav" onclick="closeDrawer();createPlace()">＋ Create a Place</button>
+ ${p?`<div class="drawerSection">Text Areas in ${esc(p.name)}</div>
+ ${p.channels.map(c=>`<div class="drawerPlace"><button class="nav ${c.id===state.currentChannel?'active':''}" onclick="openChannel('${c.id}')"># ${esc(c.name)}</button><button class="channelAdd" onclick="closeDrawer();channelSettings('${c.id}')">⋯</button></div>`).join('')}
+ <button class="nav" onclick="closeDrawer();createChannel()">＋ Create a Text Area</button>
+ <button class="nav" onclick="closeDrawer();placeSettings()">⚙ Place settings</button>`:''}
+ <div class="drawerSection">Account</div><button class="nav" onclick="closeDrawer();settings()">● Account settings</button>`;
+ d.classList.add('open');
+}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open')}
+function openModal(v){document.getElementById('modal').innerHTML=v;document.getElementById('shade').classList.add('open')}
+function closeModal(){document.getElementById('shade').classList.remove('open')}
+function mobile(btn,v){
+ document.querySelectorAll('.mobile button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+ if(v==='home')home();
+ if(v==='places')openDrawer();
+ if(v==='friends')friends();
+ if(v==='profile'){state.view='profile';save();render()}
+}
+render();
+</script>
+</body>
+</html>
